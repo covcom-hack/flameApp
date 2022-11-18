@@ -1,0 +1,47 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /${SERVICE_NAME:flame}
+
+security:
+  enabled: ${SECURITY_ENABLED:false}
+  oauth2:
+    client:
+      clientId:
+      clientSecret:
+      scope:
+      accessTokenUri:
+      userAuthorizationUri:
+    resource:
+      jwt:
+        key-uri:
+
+spring:
+  # Postgres
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/postgres?currentSchema=hack_sovkom
+    username:
+    password:
+    hikari:
+      connection-test-query:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        globally_quoted_identifiers: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_URL:localhost:9092}
+    admin:
+      properties:
+        request.timeout.ms: ${KAFKA_REQUEST_TIMEOUT:5000}
