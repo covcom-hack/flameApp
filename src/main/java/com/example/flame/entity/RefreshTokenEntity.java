@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tokens")
+@Table(name = "tTokens")
 @Data
 public class RefreshTokenEntity {
     @Id

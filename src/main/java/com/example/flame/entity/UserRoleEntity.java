@@ -8,7 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "tRoles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,7 +24,6 @@ public class UserRoleEntity implements Serializable {
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
     private Role role;
-
 
     public UserRoleEntity(Role role) {
         this.role = role;

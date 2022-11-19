@@ -1,10 +1,7 @@
 package com.example.flame.service.impl;
 
 import com.example.flame.custommappers.UserMapper;
-import com.example.flame.domain.JwtRequest;
-import com.example.flame.domain.JwtResponse;
-import com.example.flame.domain.Role;
-import com.example.flame.domain.User;
+import com.example.flame.domain.*;
 import com.example.flame.entity.RefreshTokenEntity;
 import com.example.flame.entity.UserEntity;
 import com.example.flame.entity.UserRoleEntity;
@@ -40,7 +37,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> getByLogin(@NonNull String login) {
         var result = userRepository.getUserEntityByUsername(login);
         if (result.isPresent()) {
-            var user = modelMapper.map(userRepository.getUserEntityByUsername(login), User.class);
+            var user = modelMapper.map(result.get(), User.class);
             return Optional.of(user);
         } else
             return Optional.empty();
@@ -76,7 +73,8 @@ public class UserServiceImpl implements UserService {
         }
         var userDto = user.get();
         refreshTokenEntity.setUserEntity(modelMapper.map(userDto, UserEntity.class));
-        if (Objects.equals(userDto.getPassword(), request.getPass())) {
+        System.out.println(passwordEncoder.encode(userDto.getPassword()));
+        if (Objects.equals(passwordEncoder.encode(userDto.getPassword()), request.getPass())) {
             final String accessToken = jwtProvider.generateAccessToken(userDto);
             final String refreshToken = jwtProvider.generateRefreshToken(userDto);
             refreshTokenEntity.setRefreshToken(refreshToken);
