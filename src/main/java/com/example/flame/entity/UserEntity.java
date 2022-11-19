@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Entity
-@Table(name = "user_table")
+@Table(name = "tUser")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -26,20 +26,29 @@ public class UserEntity implements Serializable {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "surname")
+    private String surname;
+
+    @Column(name = "patronymic")
+    private String patronymic;
+
     @Column(name = "passport")
     private Integer passport;
 
     @Column(name = "inn")
     private String inn;
 
-    @Column(name = "phonenumber")
-    private Integer phoneNumber;
+    @Column(name = "phone")
+    private String phoneNumber;
 
     @Column(name = "login")
     private String login;
 
     @Column(name = "status")
     private Integer status;
+
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "password")
     private String password;

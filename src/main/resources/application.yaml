@@ -20,9 +20,9 @@ spring:
   # Postgres
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/postgres?currentSchema=hack_sovkom
-    username:
-    password:
+    url: jdbc:postgresql://c-c9qikb36ojt5s6c7vpfo.rw.mdb.yandexcloud.net:6432/tsypk?sslmode=verify-full
+    username: tsypk
+    password: 15.Aleksei
     hikari:
       connection-test-query:
   jpa:
