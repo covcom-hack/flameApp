@@ -37,10 +37,10 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public Optional<User> getByLogin(@NonNull String login) {
-        var result = userRepository.getUserEntityByUsername(login);
+    public Optional<User> getByLogin(@NonNull String username) {
+        var result = userRepository.getUserEntityByUsername(username);
         if (result.isPresent()) {
-            var user = modelMapper.map(userRepository.getUserEntityByUsername(login), User.class);
+            var user = modelMapper.map(userRepository.getUserEntityByUsername(username), User.class);
             return Optional.of(user);
         } else
             return Optional.empty();
