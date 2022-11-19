@@ -73,32 +73,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse login(JwtRequest request) {
-//        AuthResponse authResponse = new AuthResponse();
-//        RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
-//        final var user = getByLogin(request.getLogin());
-//        if (user.isEmpty()) {
-//            authResponse.setErrorMessage("Пользователь с таким логином: " + request.getLogin() + " не найден!");
-//            return authResponse;
-//        }
-//        var userDto = user.get();
-//        refreshTokenEntity.setUserEntity(modelMapper.map(userDto, UserEntity.class));
-//        System.out.println(passwordEncoder.encode(userDto.getPassword()));
-//        if (Objects.equals(passwordEncoder.encode(userDto.getPassword()), request.getPass())) {
-//            final String accessToken = jwtProvider.generateAccessToken(userDto);
-//            final String refreshToken = jwtProvider.generateRefreshToken(userDto);
-//            refreshTokenEntity.setRefreshToken(refreshToken);
-//            refreshTokenRepository.save(refreshTokenEntity);
-//            JwtResponse jwtResponse = JwtResponse.builder().refreshToken(refreshToken).accessToken(accessToken).build();
-//            authResponse.setJwtResponse(jwtResponse);
-//        } else {
-//            authResponse.setErrorMessage("Неправильный пароль!");
-//        }
-//        return authResponse;
-
-//        if (request.getLogin() == null)
-//            throw new InvalidLoginRequestException("The username must not be empty");
-//        if (request.getPass() == null)
-//            throw new InvalidLoginRequestException("The password must not be empty");
         AuthResponse authResponse = new AuthResponse();
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPass())
@@ -107,17 +81,25 @@ public class UserServiceImpl implements UserService {
 
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+                .map(GrantedAuthority::getAuthority).toList();
         String accessToken = jwtProvider.createToken(userDetails);
 
         Optional<String> refreshTokenOptional = refreshTokenService.updateRefreshToken(userDetails.getId());
-//        if (!refreshTokenOptional.isPresent())
-//            throw new InvalidLoginRequestException("User doesnt found in db");
+        if (refreshTokenOptional.isEmpty()) {
+            authResponse.setErrorMessage("Такого пользователя не существует");
+            return authResponse;
+        }
         JwtResponse jwtResponse = new JwtResponse();
         jwtResponse.setAccessToken(accessToken);
         jwtResponse.setRefreshToken(refreshTokenOptional.get());
         authResponse.setJwtResponse(jwtResponse);
+        authResponse.setRole(roles.get(0));
         return authResponse;
+    }
+
+    @Override
+    public AuthResponse loginAdmin(JwtRequest request) {
+        return null;
     }
 
 }

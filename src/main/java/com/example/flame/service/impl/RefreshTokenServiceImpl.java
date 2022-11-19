@@ -36,7 +36,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     public Long deleteByUserId(Long userId) {
         Optional<UserEntity> userOptional = userRepository.findById(userId);
-        return userOptional.map(refreshTokenRepository::deleteRefreshTokenEntityByUserEntity).orElse(0L);
+//        return refreshTokenRepository.deleteRefreshTokenEntityByUserEntity(userOptional.get());
+        return userOptional.map(refreshTokenRepository::deleteByUserEntity).orElse(0L);
     }
 
     @Override

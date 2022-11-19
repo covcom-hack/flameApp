@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        user.setRoleSet(Set.of(Role.USER));
+        user.setRoleSet(Set.of(Role.ADMIN));
         var result = userService.register(user);
         return ResponseEntity.ok(result);
     }
