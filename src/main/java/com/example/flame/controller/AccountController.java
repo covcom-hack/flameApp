@@ -1,12 +1,13 @@
 package com.example.flame.controller;
 
 import com.example.flame.domain.JwtRequest;
+import com.example.flame.domain.User;
+import com.example.flame.network.response.UserResponse;
 import com.example.flame.service.UserService;
-import com.example.flame.service.impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,13 +15,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/acc")
 @RequiredArgsConstructor
 public class AccountController {
+    private final UserService userService;
 
-    UserService us;
+    @GetMapping("/info")
+    public ResponseEntity<UserResponse> getUserData(@RequestBody JwtRequest request) {
 
-    @GetMapping("/resp")
-    public ResponseEntity<String> getUserData(JwtRequest request) {
+        var user =  userService.getByLogin(request.getLogin());
 
+        if (user.isPresent()) {
+            User u = user.get();
+            UserResponse userResponse = new UserResponse(
+                    u.surname(),
+                    u.name(),
+                    u.patronymic(),
+                    u.passport(),
+                    u.inn(),
+                    u.phone(),
+                    u.username()
+            );
+            return ResponseEntity.ok().body(userResponse);
+        }
 
-        return new ResponseEntity<String>("Response", HttpStatus.OK);
+        return ResponseEntity.badRequest().body(null);
     }
 }

@@ -34,11 +34,11 @@ public class JwtProvider {
         final Instant accessExpirationInstant = now.plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
         final Date accessExpiration = Date.from(accessExpirationInstant);
         return Jwts.builder()
-                .setSubject(user.login())
+                .setSubject(user.username())
                 .setExpiration(accessExpiration)
                 .signWith(jwtAccessToken)
 //                .claim("roles", user.getRoles())
-                .claim("firstName", user.firstName())
+                .claim("firstName", user.surname())
                 .compact();
     }
 
@@ -47,7 +47,7 @@ public class JwtProvider {
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         return Jwts.builder()
-                .setSubject(user.login())
+                .setSubject(user.username())
                 .setExpiration(refreshExpiration)
                 .signWith(jwtRefreshToken)
                 .compact();

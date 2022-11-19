@@ -33,16 +33,13 @@ public class UserEntity implements Serializable {
     private String patronymic;
 
     @Column(name = "passport")
-    private Integer passport;
+    private String passport;
 
     @Column(name = "inn")
     private String inn;
 
     @Column(name = "phone")
-    private String phoneNumber;
-
-    @Column(name = "login")
-    private String login;
+    private String phone;
 
     @Column(name = "status")
     private Integer status;
