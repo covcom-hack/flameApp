@@ -1,7 +1,6 @@
 package com.example.flame.controller;
 
 import com.example.flame.domain.JwtRequest;
-import com.example.flame.domain.User;
 import com.example.flame.network.response.AuthResponse;
 import com.example.flame.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,9 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        var result = userService.register(user);
-        return ResponseEntity.ok(result);
-    }
+//    @PostMapping("/admin/login")
+//    public ResponseEntity loginAdmin(@RequestBody JwtRequest request) {
+//
+//    }
 
 }

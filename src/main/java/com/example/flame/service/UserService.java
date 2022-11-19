@@ -15,4 +15,6 @@ public interface UserService {
     User register(User user);
 
     AuthResponse login(JwtRequest request);
+
+    AuthResponse loginAdmin(JwtRequest request);
 }
