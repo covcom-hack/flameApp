@@ -26,4 +26,7 @@ public class UserRoleEntity implements Serializable {
     private Role role;
 
 
+    public UserRoleEntity(Role role) {
+        this.role = role;
+    }
 }
