@@ -25,13 +25,13 @@ public class AccountController {
         if (user.isPresent()) {
             User u = user.get();
             UserResponse userResponse = new UserResponse(
-                    u.surname(),
-                    u.name(),
-                    u.patronymic(),
-                    u.passport(),
-                    u.inn(),
-                    u.phone(),
-                    u.username()
+                    u.getSurname(),
+                    u.getName(),
+                    u.getPatronymic(),
+                    u.getPassport(),
+                    u.getInn(),
+                    u.getPhone(),
+                    u.getUsername()
             );
             return ResponseEntity.ok().body(userResponse);
         }

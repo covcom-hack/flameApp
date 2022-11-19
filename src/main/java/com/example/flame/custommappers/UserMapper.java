@@ -8,15 +8,15 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     public UserEntity mapToEntity(User user) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setPassword(user.password());
-        userEntity.setInn(user.inn());
-        userEntity.setUsername(user.username());
-        userEntity.setPhone(user.phone());
-        userEntity.setStatus(user.status());
-        userEntity.setName(user.name());
-        userEntity.setSurname(user.surname());
-        userEntity.setPatronymic(user.patronymic());
-        userEntity.setPassport(user.passport());
+        userEntity.setPassword(user.getPassword());
+        userEntity.setInn(user.getInn());
+        userEntity.setUsername(user.getUsername());
+        userEntity.setPhone(user.getPhone());
+        userEntity.setStatus(user.getStatus());
+        userEntity.setName(user.getName());
+        userEntity.setSurname(user.getSurname());
+        userEntity.setPatronymic(user.getPatronymic());
+        userEntity.setPassport(user.getPassport());
         return userEntity;
     }
 }

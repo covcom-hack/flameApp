@@ -12,13 +12,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 public class User {
-    private String firstName;
+    private String name;
     private String surname;
     private String patronymic;
-    private Integer passport;
+    private String passport;
     private String inn;
-    private Integer phoneNumber;
-    private String login;
+    private String phone;
+    private String username;
     private Integer status;
     private String password;
     private Set<Role> roleSet;
