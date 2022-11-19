@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         }
         var userDto = user.get();
         refreshTokenEntity.setUserEntity(modelMapper.map(userDto, UserEntity.class));
-        if (Objects.equals(userDto.password(), request.getPass())) {
+        if (Objects.equals(userDto.getPassword(), request.getPass())) {
             final String accessToken = jwtProvider.generateAccessToken(userDto);
             final String refreshToken = jwtProvider.generateRefreshToken(userDto);
             refreshTokenEntity.setRefreshToken(refreshToken);
