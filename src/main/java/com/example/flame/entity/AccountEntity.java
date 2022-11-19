@@ -22,13 +22,13 @@ public class AccountEntity implements Serializable {
     private Long id;
 
     @Column(name = "user_id")
-    private Long user_id;
+    private Long userId;
 
     @Column(name = "num")
     private String num;
 
     @Column(name = "currency_id")
-    private Long currency_id;
+    private Long currencyId;
 
     @Column(name = "amount")
     private Double amount;
