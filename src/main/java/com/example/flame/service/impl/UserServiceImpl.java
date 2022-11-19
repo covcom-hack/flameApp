@@ -10,13 +10,20 @@ import com.example.flame.repository.RefreshTokenRepository;
 import com.example.flame.repository.UserRepository;
 import com.example.flame.repository.UserRoleRepository;
 import com.example.flame.service.JwtProvider;
+import com.example.flame.service.RefreshTokenService;
 import com.example.flame.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -30,8 +37,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRoleRepository userRoleRepository;
     private final JwtProvider jwtProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
     private final UserMapper userMapper;
+    private final AuthenticationManager authenticationManager;
+
 
     @Override
     public Optional<User> getByLogin(@NonNull String login) {
@@ -64,26 +73,50 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthResponse login(JwtRequest request) {
+//        AuthResponse authResponse = new AuthResponse();
+//        RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
+//        final var user = getByLogin(request.getLogin());
+//        if (user.isEmpty()) {
+//            authResponse.setErrorMessage("Пользователь с таким логином: " + request.getLogin() + " не найден!");
+//            return authResponse;
+//        }
+//        var userDto = user.get();
+//        refreshTokenEntity.setUserEntity(modelMapper.map(userDto, UserEntity.class));
+//        System.out.println(passwordEncoder.encode(userDto.getPassword()));
+//        if (Objects.equals(passwordEncoder.encode(userDto.getPassword()), request.getPass())) {
+//            final String accessToken = jwtProvider.generateAccessToken(userDto);
+//            final String refreshToken = jwtProvider.generateRefreshToken(userDto);
+//            refreshTokenEntity.setRefreshToken(refreshToken);
+//            refreshTokenRepository.save(refreshTokenEntity);
+//            JwtResponse jwtResponse = JwtResponse.builder().refreshToken(refreshToken).accessToken(accessToken).build();
+//            authResponse.setJwtResponse(jwtResponse);
+//        } else {
+//            authResponse.setErrorMessage("Неправильный пароль!");
+//        }
+//        return authResponse;
+
+//        if (request.getLogin() == null)
+//            throw new InvalidLoginRequestException("The username must not be empty");
+//        if (request.getPass() == null)
+//            throw new InvalidLoginRequestException("The password must not be empty");
         AuthResponse authResponse = new AuthResponse();
-        RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity();
-        final var user = getByLogin(request.getLogin());
-        if (user.isEmpty()) {
-            authResponse.setErrorMessage("Пользователь с таким логином: " + request.getLogin() + " не найден!");
-            return authResponse;
-        }
-        var userDto = user.get();
-        refreshTokenEntity.setUserEntity(modelMapper.map(userDto, UserEntity.class));
-        System.out.println(passwordEncoder.encode(userDto.getPassword()));
-        if (Objects.equals(passwordEncoder.encode(userDto.getPassword()), request.getPass())) {
-            final String accessToken = jwtProvider.generateAccessToken(userDto);
-            final String refreshToken = jwtProvider.generateRefreshToken(userDto);
-            refreshTokenEntity.setRefreshToken(refreshToken);
-            refreshTokenRepository.save(refreshTokenEntity);
-            JwtResponse jwtResponse = JwtResponse.builder().refreshToken(refreshToken).accessToken(accessToken).build();
-            authResponse.setJwtResponse(jwtResponse);
-        } else {
-            authResponse.setErrorMessage("Неправильный пароль!");
-        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPass())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        String accessToken = jwtProvider.createToken(userDetails);
+
+        Optional<String> refreshTokenOptional = refreshTokenService.updateRefreshToken(userDetails.getId());
+//        if (!refreshTokenOptional.isPresent())
+//            throw new InvalidLoginRequestException("User doesnt found in db");
+        JwtResponse jwtResponse = new JwtResponse();
+        jwtResponse.setAccessToken(accessToken);
+        jwtResponse.setRefreshToken(refreshTokenOptional.get());
+        authResponse.setJwtResponse(jwtResponse);
         return authResponse;
     }
 
