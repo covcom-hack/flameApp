@@ -4,7 +4,9 @@ import com.example.flame.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
-    UserEntity getUserEntityByLogin(String login);
+    Optional<UserEntity> getUserEntityByLogin(String login);
 }
