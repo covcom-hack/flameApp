@@ -2,7 +2,10 @@ package com.example.flame.custommappers;
 
 import com.example.flame.domain.User;
 import com.example.flame.entity.UserEntity;
+import com.example.flame.entity.UserRoleEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -17,6 +20,7 @@ public class UserMapper {
         userEntity.setSurname(user.getSurname());
         userEntity.setPatronymic(user.getPatronymic());
         userEntity.setPassport(user.getPassport());
+        userEntity.setRoles(user.getRoleSet().stream().map(UserRoleEntity::new).collect(Collectors.toSet()));
         return userEntity;
     }
 }

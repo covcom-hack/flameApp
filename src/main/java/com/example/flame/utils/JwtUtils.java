@@ -1,6 +1,7 @@
 package com.example.flame.utils;
 
 import com.example.flame.domain.JwtAuthentication;
+import com.example.flame.domain.JwtUserDetails;
 import com.example.flame.domain.Role;
 import io.jsonwebtoken.Claims;
 
