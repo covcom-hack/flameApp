@@ -1,5 +1,6 @@
 package com.example.flame.service.impl;
 
+import com.example.flame.custommappers.UserMapper;
 import com.example.flame.domain.JwtRequest;
 import com.example.flame.domain.JwtResponse;
 import com.example.flame.domain.Role;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final UserRoleRepository userRoleRepository;
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserMapper userMapper;
 
     @Override
     public Optional<User> getByLogin(@NonNull String login) {
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User register(User user) {
-        var userEntity = modelMapper.map(user, UserEntity.class);
+        var userEntity = userMapper.mapToEntity(user);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         Set<UserRoleEntity> roles = userEntity.getRoles().stream().map(
                 role -> userRoleRepository.findByRole(role.getRole())
