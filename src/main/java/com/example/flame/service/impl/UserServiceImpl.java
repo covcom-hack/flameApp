@@ -97,9 +97,6 @@ public class UserServiceImpl implements UserService {
         return authResponse;
     }
 
-    @Override
-    public AuthResponse loginAdmin(JwtRequest request) {
-        return null;
-    }
+
 
 }
