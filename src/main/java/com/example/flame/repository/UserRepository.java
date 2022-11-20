@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> getUserEntityByUsername(String username);
 
-    @Query(value = "select * from \"tuser\" join user_roles ur on tuser.id = ur.user_id where ur.role_id = 1 and tuser.username =?1", nativeQuery = true)
+    @Query(value = "select * from tUser join user_roles ur on tUser.id = ur.user_id where ur.role_id = 1 and tUser.username =?1", nativeQuery = true)
     Optional<UserEntity> findAdminByLogin(String username);
 }
