@@ -22,15 +22,10 @@ public class AuthController {
     public ResponseEntity<AuthResponse> loginUser(@RequestBody JwtRequest jwtRequest) {
         var result = userService.login(jwtRequest);
         if (!Objects.equals(result.getErrorMessage(), "")) {
-            return ResponseEntity.status(400).body(result);
-        } else {
             return ResponseEntity.status(200).body(result);
+        } else {
+            return ResponseEntity.status(400).body(null);
         }
     }
-
-//    @PostMapping("/admin/login")
-//    public ResponseEntity loginAdmin(@RequestBody JwtRequest request) {
-//
-//    }
 
 }

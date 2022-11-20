@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "tCurrency")
+@Table(name = "`tCurrency`")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

@@ -1,5 +1,6 @@
 package com.example.flame.configuration;
 
+import com.example.flame.domain.Role;
 import com.example.flame.service.JwtProvider;
 import com.example.flame.service.UserDetailsService;
 import com.example.flame.utils.CustomDsl;
@@ -46,7 +47,9 @@ public class SecurityConfig {
                 .and();
 
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "flame/*").permitAll();
+                .antMatchers(HttpMethod.POST, "flame/api/auth/login").permitAll()
+                        .antMatchers("flame/api/user/register").permitAll()
+                        .antMatchers("flame/api/currency/*").hasAnyAuthority(Role.USER.getAuthority());
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
 
