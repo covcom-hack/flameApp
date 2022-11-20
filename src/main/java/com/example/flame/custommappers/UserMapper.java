@@ -15,7 +15,6 @@ public class UserMapper {
         userEntity.setInn(user.getInn());
         userEntity.setUsername(user.getUsername());
         userEntity.setPhone(user.getPhone());
-        userEntity.setStatus(user.getStatus());
         userEntity.setName(user.getName());
         userEntity.setSurname(user.getSurname());
         userEntity.setPatronymic(user.getPatronymic());
@@ -23,4 +22,8 @@ public class UserMapper {
         userEntity.setRoles(user.getRoleSet().stream().map(UserRoleEntity::new).collect(Collectors.toSet()));
         return userEntity;
     }
+
+//    public User mapToDto(UserEntity user){
+//        User user1
+//    }
 }

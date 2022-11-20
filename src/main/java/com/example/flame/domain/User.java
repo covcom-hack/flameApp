@@ -19,7 +19,7 @@ public class User {
     private String inn;
     private String phone;
     private String username;
-    private Integer status;
+//    private Integer status;
     private String password;
     private Set<Role> roleSet;
 }

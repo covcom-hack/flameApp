@@ -6,6 +6,7 @@ import com.example.flame.entity.RefreshTokenEntity;
 import com.example.flame.entity.UserEntity;
 import com.example.flame.entity.UserRoleEntity;
 import com.example.flame.network.response.AuthResponse;
+import com.example.flame.network.response.UserResponse;
 import com.example.flame.repository.RefreshTokenRepository;
 import com.example.flame.repository.UserRepository;
 import com.example.flame.repository.UserRoleRepository;
@@ -43,13 +44,24 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public Optional<User> getByLogin(@NonNull String login) {
-        var result = userRepository.getUserEntityByUsername(login);
-        if (result.isPresent()) {
-            var user = modelMapper.map(result.get(), User.class);
-            return Optional.of(user);
-        } else
-            return Optional.empty();
+    public UserResponse getUser(String token) {
+        UserResponse userResponse = new UserResponse();
+        Authentication authentication = jwtProvider.getAuth(token);
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        var username = userDetails.getUsername();
+        var entity = userRepository.getUserEntityByUsername(username);
+        if (entity.isEmpty()) {
+            userResponse.setErrorMessage("Пользователя не существует");
+            return userResponse;
+        }
+        userResponse = buildUserResponse(entity.get());
+        return userResponse;
+    }
+
+    private UserResponse buildUserResponse(UserEntity user) {
+        return UserResponse.builder().username(user.getUsername())
+                .inn(user.getInn()).name(user.getName()).passport(user.getPassport()).patronymic(user.getPatronymic())
+                .phone(user.getPhone()).surname(user.getSurname()).build();
     }
 
     @Override
@@ -67,6 +79,7 @@ public class UserServiceImpl implements UserService {
                 role -> userRoleRepository.findByRole(role.getRole())
         ).collect(Collectors.toSet());
         userEntity.setRoles(roles);
+        userEntity.setStatus(0);
         var savedEntity = userRepository.save(userEntity);
         return modelMapper.map(savedEntity, User.class);
     }
@@ -96,7 +109,6 @@ public class UserServiceImpl implements UserService {
         authResponse.setRole(roles.get(0));
         return authResponse;
     }
-
 
 
 }

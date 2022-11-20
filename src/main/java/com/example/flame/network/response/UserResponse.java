@@ -1,5 +1,6 @@
 package com.example.flame.network.response;
 
+import com.example.flame.domain.User;
 import lombok.*;
 
 @AllArgsConstructor
@@ -15,4 +16,5 @@ public class UserResponse {
     private String inn;
     private String phone;
     private String username;
+    private String errorMessage;
 }

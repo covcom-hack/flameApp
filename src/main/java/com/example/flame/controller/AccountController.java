@@ -9,12 +9,11 @@ import com.example.flame.service.AccountService;
 import com.example.flame.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/acc")
@@ -23,28 +22,19 @@ public class AccountController {
     private final UserService userService;
     private final AccountService accountService;
 
+    @PreAuthorize("hasAuthority('User')")
     @GetMapping("/info")
-    public ResponseEntity<UserResponse> getUserData(@RequestBody JwtRequest request) {
+    public ResponseEntity<UserResponse> getUserData(@RequestHeader("Authorization") String token) {
 
-        var user =  userService.getByLogin(request.getLogin());
+        var user = userService.getUser(token);
 
-        if (user.isPresent()) {
-            User u = user.get();
-            UserResponse userResponse = new UserResponse(
-                    u.getSurname(),
-                    u.getName(),
-                    u.getPatronymic(),
-                    u.getPassport(),
-                    u.getInn(),
-                    u.getPhone(),
-                    u.getUsername()
-            );
-            return ResponseEntity.ok().body(userResponse);
+        if (Objects.equals(user.getErrorMessage(), "")) {
+            return ResponseEntity.ok(user);
         }
-
-        return ResponseEntity.badRequest().body(null);
+        return ResponseEntity.badRequest().body(user);
     }
 
+    @PreAuthorize("hasAuthority('User')")
     @GetMapping("/accounts")
     public ResponseEntity<ArrayList<AccountResponse>> getAccounts(@RequestBody JwtRequest request) {
         String username = request.getLogin();
