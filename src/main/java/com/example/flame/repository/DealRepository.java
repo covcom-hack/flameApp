@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public interface DealRepository extends JpaRepository<DealEntity, Long> {
-
-    @Query("select td from DealEntity td where td.datetime >= :from and td.datetime <= :to " +
-            "and (td.user_to_username = :username or td.user_from_username = :username) " +
-            "and (td.num_from = :num or td.num_to = :num)")
+    @Query(value = "select td from DealEntity td where td.dateTime >= :from and td.dateTime <= :to " +
+            "and (td.userTo = :username or td.userFrom = :username)" +
+            "and (td.numFrom = :num or td.numTo = :num)")
     Optional<ArrayList<DealEntity>> getHistory(LocalDateTime from, LocalDateTime to, String username, String num);
 }

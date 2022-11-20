@@ -32,8 +32,8 @@ public class DealController {
             ArrayList<DealEntity> deals = history.get();
             for (DealEntity item : deals) {
 
-                String numFrom = item.getNum_from();
-                String numTo = item.getNum_to();
+                String numFrom = item.getNumFrom();
+                String numTo = item.getNumTo();
                 String direction = "";
 
                 if (numFrom.equals(num) && numTo.equals("брокер")) direction = "списание";
@@ -41,7 +41,7 @@ public class DealController {
                 else if (numFrom.equals("брокер") && numTo.equals(num)) direction = "поступление";
                 else if (numFrom.equals("карта") && numTo.equals(num)) direction = "пополнение c карты";
 
-                DealHistoryResponse dhr = new DealHistoryResponse(num, item.getAmount(), item.getDatetime(), direction);
+                DealHistoryResponse dhr = new DealHistoryResponse(num, item.getAmount(), item.getDateTime(), direction);
                 result.add(dhr);
             }
             return ResponseEntity.ok(result);
