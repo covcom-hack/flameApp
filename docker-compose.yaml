@@ -6,13 +6,13 @@ services:
     ports:
       - "8080:8080"
     build:
-      context: .
+      context: services/currencyApp
 
   java:
     container_name: flame-java
     ports:
       - "6080:6080"
     build:
-      context: services/currencyApp
+      context: services/flameApp
     depends_on:
       - "go"
