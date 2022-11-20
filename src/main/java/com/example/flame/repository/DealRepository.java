@@ -13,4 +13,5 @@ public interface DealRepository extends JpaRepository<DealEntity, Long> {
             "and (td.userTo = :username or td.userFrom = :username)" +
             "and (td.numFrom = :num or td.numTo = :num)")
     Optional<ArrayList<DealEntity>> getHistory(LocalDateTime from, LocalDateTime to, String username, String num);
+
 }

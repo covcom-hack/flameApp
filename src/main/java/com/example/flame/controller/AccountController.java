@@ -1,6 +1,5 @@
 package com.example.flame.controller;
 
-import com.example.flame.domain.JwtRequest;
 import com.example.flame.domain.User;
 import com.example.flame.entity.AccountEntity;
 import com.example.flame.network.response.AccountResponse;
@@ -24,9 +23,9 @@ public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/info")
-    public ResponseEntity<UserResponse> getUserData(@RequestBody JwtRequest request) {
+    public ResponseEntity<UserResponse> getUserData(@RequestBody String username) {
 
-        var user =  userService.getByLogin(request.getLogin());
+        var user =  userService.getByLogin(username);
 
         if (user.isPresent()) {
             User u = user.get();
@@ -46,8 +45,7 @@ public class AccountController {
     }
 
     @GetMapping("/accounts")
-    public ResponseEntity<ArrayList<AccountResponse>> getAccounts(@RequestBody JwtRequest request) {
-        String username = request.getLogin();
+    public ResponseEntity<ArrayList<AccountResponse>> getAccounts(@RequestBody String username) {
         var optional = accountService.getAllByUsername(username);
 
         ArrayList<AccountResponse> result = new ArrayList<>();

@@ -1,8 +1,10 @@
 package com.example.flame.controller;
 
-import com.example.flame.domain.JwtRequest;
+import com.example.flame.entity.CurrencyEntity;
 import com.example.flame.entity.DealEntity;
 import com.example.flame.network.response.DealHistoryResponse;
+import com.example.flame.service.AccountService;
+import com.example.flame.service.CurrencyService;
 import com.example.flame.service.DealService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/deal")
 @RequiredArgsConstructor
 public class DealController {
     private final DealService dealService;
+    private final AccountService accountService;
+    private final CurrencyService currencyService;
 
+    // Возвращает историю операций по переданному биржевому счету
     @GetMapping("/getDealHistory")
-    public ResponseEntity<ArrayList<DealHistoryResponse>> getDealHistory(@RequestBody JwtRequest jwtRequest, String num,
+    public ResponseEntity<ArrayList<DealHistoryResponse>> getDealHistory(@RequestBody String username, String num,
                                                               LocalDateTime from, LocalDateTime to) {
-        String username = jwtRequest.getLogin();
-
         var history = dealService.getHistory(from, to, username, num);
 
         if (history.isPresent()) {
@@ -47,5 +51,23 @@ public class DealController {
             return ResponseEntity.ok(result);
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    public ResponseEntity<Boolean> makeDeal(@RequestBody String username, String briefFrom,
+                                            String briefTo, Double amountFrom, Double amountTo) {
+        //1. Получить accNum по username и brief
+        Optional<CurrencyEntity> cf = currencyService.getCurrencyByBrief(briefFrom);
+        Optional<CurrencyEntity> ct = currencyService.getCurrencyByBrief(briefTo);
+        if (cf.isEmpty() || ct.isEmpty()) {
+            return ResponseEntity.badRequest().body(false);
+        }
+
+        long idF = cf.get().getId();
+        long idT = ct.get().getId();
+
+        accountService.makeDeal(username, idF, amountFrom * (-1));
+        accountService.makeDeal(username, idT, amountTo);
+
+        return ResponseEntity.ok(true);
     }
 }

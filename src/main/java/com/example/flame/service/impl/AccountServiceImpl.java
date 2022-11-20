@@ -19,4 +19,14 @@ public class AccountServiceImpl implements AccountService {
     public Optional<ArrayList<AccountEntity>> getAllByUsername(@NonNull String username) {
         return accountRepository.getAllByUsername(username);
     }
+
+    @Override
+    public Optional<AccountEntity> getAllByUsernameAndCurrencyId(String username, long currencyId) {
+        return accountRepository.getAllByUsernameAndCurrencyId(username, currencyId);
+    }
+
+    @Override
+    public void makeDeal(String username, long currencyId, double amount) {
+        accountRepository.makeDeal(username, currencyId, amount);
+    }
 }
