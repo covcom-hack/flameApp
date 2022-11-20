@@ -1,47 +1,48 @@
 package com.example.flame.entity;
 
+import com.example.flame.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tDeal")
+@Table(name = "`tDeal`")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class DealEntity {
+public class DealEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @SequenceGenerator(name = "deal_id_seq", sequenceName = "deal_id_seq")
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "user_from_username")
+    private String userFrom;
+
+    @Column(name = "user_to_username")
+    private String userTo;
+
     @Column(name = "num_from")
-    private String num_from;
+    private String numFrom;
 
     @Column(name = "num_to")
-    private String num_to;
+    private String numTo;
 
     @Column(name = "date_time")
-    private LocalDateTime datetime;
+    private LocalDateTime dateTime;
 
     @Column(name = "currency_brief")
-    private String currency_brief;
+    private String currencyBrief;
 
     @Column(name = "amount")
     private Double amount;
-
-    @Column(name = "user_from_username")
-    private String user_from_username;
-
-    @Column(name = "user_to_username")
-    private String user_to_username;
 
 }

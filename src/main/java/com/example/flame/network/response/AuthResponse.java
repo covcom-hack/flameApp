@@ -12,4 +12,5 @@ import org.springframework.context.annotation.Bean;
 public class AuthResponse {
     private JwtResponse jwtResponse;
     private String errorMessage;
+    private String role;
 }

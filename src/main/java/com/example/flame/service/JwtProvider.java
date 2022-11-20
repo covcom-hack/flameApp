@@ -1,100 +1,64 @@
 package com.example.flame.service;
 
-import com.example.flame.domain.User;
+import com.example.flame.domain.JwtUserDetails;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import io.jsonwebtoken.security.Keys;
 
-import javax.crypto.SecretKey;
 import java.security.Key;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class JwtProvider {
-    private final SecretKey jwtAccessToken;
-    private final SecretKey jwtRefreshToken;
+    private final UserDetailsService userDetailsService;
 
-    public JwtProvider(@Value("${jwt.secret.access}") String access,
-                       @Value("${jwt.secret.refresh}") String refresh) {
-        this.jwtAccessToken = Keys.hmacShaKeyFor(Decoders.BASE64.decode(access));
-        this.jwtRefreshToken = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refresh));
-    }
+    @Value("${app.jwtSecret}")
+    private String secret;
 
-    public String generateAccessToken(@NonNull User user) {
-        final LocalDateTime now = LocalDateTime.now();
-        final Instant accessExpirationInstant = now.plusMinutes(5).atZone(ZoneId.systemDefault()).toInstant();
-        final Date accessExpiration = Date.from(accessExpirationInstant);
+    @Value("${app.jwtExpirationMs}")
+    private int jwtExpiationMs;
+
+    public String createToken(JwtUserDetails jwtUserDetails) {
+        Claims claims = Jwts.claims().setSubject(jwtUserDetails.getUsername());
+        claims.put("auth", jwtUserDetails.getAuthorities().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getAuthority()))
+                .collect(Collectors.toList()));
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + jwtExpiationMs);
         return Jwts.builder()
-                .setSubject(user.getUsername())
-                .setExpiration(accessExpiration)
-                .signWith(jwtAccessToken)
-//                .claim("roles", user.getRoles())
-                .claim("surname", user.getSurname())
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
 
-    public String generateRefreshToken(@NonNull User user) {
-        final LocalDateTime now = LocalDateTime.now();
-        final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
-        final Date refreshExpiration = Date.from(refreshExpirationInstant);
-        return Jwts.builder()
-                .setSubject(user.getUsername())
-                .setExpiration(refreshExpiration)
-                .signWith(jwtRefreshToken)
-                .compact();
-    }
-
-    public boolean validateAccessToken(@NonNull String accessToken) {
-        return validateToken(accessToken, jwtAccessToken);
-    }
-
-    public boolean validateRefreshToken(@NonNull String refreshToken) {
-        return validateToken(refreshToken, jwtRefreshToken);
-    }
-
-    private boolean validateToken(@NonNull String token, @NonNull Key secret) {
+    public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secret)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException expEx) {
-            log.error("Token expired", expEx);
-        } catch (UnsupportedJwtException unsEx) {
-            log.error("Unsupported jwt", unsEx);
-        } catch (MalformedJwtException mjEx) {
-            log.error("Malformed jwt", mjEx);
-        } catch (SignatureException sEx) {
-            log.error("Invalid signature", sEx);
-        } catch (Exception e) {
-            log.error("invalid token", e);
+            Jws<Claims> claimsJwts = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+            return !claimsJwts.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new RuntimeException("Jwt token is expired or invalid");
         }
-        return false;
     }
 
-    public Claims getAccessClaims(@NonNull String token) {
-        return getClaims(token, jwtAccessToken);
+    private String getUsername(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public Claims getRefreshClaims(@NonNull String token) {
-        return getClaims(token, jwtRefreshToken);
-    }
-
-    private Claims getClaims(@NonNull String token, @NonNull Key secret) {
-        return Jwts.parserBuilder()
-                .setSigningKey(secret)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    public Authentication getAuth(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

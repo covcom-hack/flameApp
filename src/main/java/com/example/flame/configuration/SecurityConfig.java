@@ -1,8 +1,12 @@
 package com.example.flame.configuration;
 
+import com.example.flame.domain.Role;
 import com.example.flame.service.JwtProvider;
+import com.example.flame.service.UserDetailsService;
 import com.example.flame.utils.CustomDsl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,11 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,7 +47,9 @@ public class SecurityConfig {
                 .and();
 
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "flame/*").permitAll();
+                .antMatchers(HttpMethod.POST, "flame/api/auth/login").permitAll()
+                        .antMatchers("flame/api/user/register").permitAll()
+                        .antMatchers("flame/api/currency/*").hasAnyAuthority(Role.USER.getAuthority());
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
 
@@ -68,6 +68,21 @@ public class SecurityConfig {
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
+    }
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder, UserDetailsService userDetailService)
+            throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(userDetailService)
+                .passwordEncoder(bCryptPasswordEncoder)
+                .and()
+                .build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

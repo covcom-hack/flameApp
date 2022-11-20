@@ -1,7 +1,6 @@
 package com.example.flame.controller;
 
 import com.example.flame.domain.JwtRequest;
-import com.example.flame.domain.User;
 import com.example.flame.network.response.AuthResponse;
 import com.example.flame.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +22,10 @@ public class AuthController {
     public ResponseEntity<AuthResponse> loginUser(@RequestBody JwtRequest jwtRequest) {
         var result = userService.login(jwtRequest);
         if (!Objects.equals(result.getErrorMessage(), "")) {
-            return ResponseEntity.status(400).body(result);
-        } else {
             return ResponseEntity.status(200).body(result);
+        } else {
+            return ResponseEntity.status(400).body(null);
         }
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        var result = userService.register(user);
-        return ResponseEntity.ok(result);
     }
 
 }
