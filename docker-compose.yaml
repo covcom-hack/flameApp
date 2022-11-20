@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  go:
+    container_name: flame-go
+    ports:
+      - "8080:8080"
+    build:
+      context: .
+
+  java:
+    container_name: flame-java
+    ports:
+      - "6080:6080"
+    build:
+      context: services/currencyApp
+    depends_on:
+      - "go"
