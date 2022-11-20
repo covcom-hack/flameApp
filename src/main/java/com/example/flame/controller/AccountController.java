@@ -40,9 +40,10 @@ public class AccountController {
         var accountEntities = accountService.getAllByUsername(token);
 
         ArrayList<AccountResponse> result = new ArrayList<>();
+        ArrayList<AccountEntity> ac = accountEntities.get();
 
-        if (!accountEntities.isEmpty()) {
-            for (AccountEntity item : accountEntities) {
+        if (!ac.isEmpty()) {
+            for (AccountEntity item : ac) {
                 AccountResponse ar = new AccountResponse(item.getNum(), item.getAmount());
                 result.add(ar);
             }

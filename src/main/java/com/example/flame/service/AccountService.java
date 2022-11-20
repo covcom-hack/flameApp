@@ -6,5 +6,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public interface AccountService {
-    ArrayList<AccountEntity> getAllByUsername(String username);
+    Optional<ArrayList<AccountEntity>> getAllByUsername(String username);
+
+    Optional<AccountEntity> getAllByUsernameAndCurrencyId(String username, long currencyId);
+
+    void makeDeal(String username, long currencyId, double amount);
 }

@@ -25,4 +25,14 @@ public class AccountServiceImpl implements AccountService {
         var username = userDetails.getUsername();
         return accountRepository.getAllByUsername(username);
     }
+
+    @Override
+    public Optional<AccountEntity> getAllByUsernameAndCurrencyId(String username, long currencyId) {
+        return accountRepository.getAllByUsernameAndCurrencyId(username, currencyId);
+    }
+
+    @Override
+    public void makeDeal(String username, long currencyId, double amount) {
+        accountRepository.makeDeal(username, currencyId, amount);
+    }
 }
