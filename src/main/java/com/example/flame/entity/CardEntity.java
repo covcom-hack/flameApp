@@ -9,7 +9,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "tCard")
+@Table(name = "`tCard`")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

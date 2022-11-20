@@ -7,7 +7,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "tAccount")
+@Table(name = "`tAccount`")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
