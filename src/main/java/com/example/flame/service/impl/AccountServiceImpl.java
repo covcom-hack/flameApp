@@ -19,7 +19,7 @@ public class AccountServiceImpl implements AccountService {
     private final JwtProvider jwtProvider;
 
     @Override
-    public ArrayList<AccountEntity> getAllByUsername(@NonNull String token) {
+    public Optional<ArrayList<AccountEntity>> getAllByUsername(@NonNull String token) {
         var authentication = jwtProvider.getAuth(token);
         JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
         var username = userDetails.getUsername();
