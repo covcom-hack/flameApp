@@ -1,4 +1,5 @@
 package com.example.flame.entity;
 
-public class Deal {
+public class AuditEntity {
+
 }
