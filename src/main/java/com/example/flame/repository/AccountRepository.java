@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
-    Optional<ArrayList<AccountEntity>> getAllByUsername(String username);
+    ArrayList<AccountEntity> getAllByUsername(String username);
 }

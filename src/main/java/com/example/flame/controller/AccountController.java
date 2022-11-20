@@ -28,7 +28,7 @@ public class AccountController {
 
         var user = userService.getUser(token);
 
-        if (Objects.equals(user.getErrorMessage(), "")) {
+        if (Objects.equals(user.getErrorMessage(), null)) {
             return ResponseEntity.ok(user);
         }
         return ResponseEntity.badRequest().body(user);
@@ -36,15 +36,13 @@ public class AccountController {
 
     @PreAuthorize("hasAuthority('User')")
     @GetMapping("/accounts")
-    public ResponseEntity<ArrayList<AccountResponse>> getAccounts(@RequestBody JwtRequest request) {
-        String username = request.getLogin();
-        var optional = accountService.getAllByUsername(username);
+    public ResponseEntity<ArrayList<AccountResponse>> getAccounts(@RequestHeader("Authorization") String token) {
+        var accountEntities = accountService.getAllByUsername(token);
 
         ArrayList<AccountResponse> result = new ArrayList<>();
 
-        if (optional.isPresent()) {
-            ArrayList<AccountEntity> accounts = optional.get();
-            for (AccountEntity item : accounts) {
+        if (!accountEntities.isEmpty()) {
+            for (AccountEntity item : accountEntities) {
                 AccountResponse ar = new AccountResponse(item.getNum(), item.getAmount());
                 result.add(ar);
             }

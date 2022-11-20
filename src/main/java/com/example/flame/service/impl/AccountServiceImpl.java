@@ -1,8 +1,10 @@
 package com.example.flame.service.impl;
 
+import com.example.flame.domain.JwtUserDetails;
 import com.example.flame.entity.AccountEntity;
 import com.example.flame.repository.AccountRepository;
 import com.example.flame.service.AccountService;
+import com.example.flame.service.JwtProvider;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final JwtProvider jwtProvider;
 
     @Override
-    public Optional<ArrayList<AccountEntity>> getAllByUsername(@NonNull String username) {
+    public ArrayList<AccountEntity> getAllByUsername(@NonNull String token) {
+        var authentication = jwtProvider.getAuth(token);
+        JwtUserDetails userDetails = (JwtUserDetails) authentication.getPrincipal();
+        var username = userDetails.getUsername();
         return accountRepository.getAllByUsername(username);
     }
 }
